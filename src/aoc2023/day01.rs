@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use crate::utils::read_file23;
 use crate::print1;
+use crate::utils::read_file23;
 
 pub fn main() -> (u32, u32) {
     (part1("01.txt"), part2("01.txt"))
@@ -34,7 +34,6 @@ fn get_calibration_value1(s: &str) -> u32 {
     }
     panic!()
 }
-
 
 type NumberMap = HashMap<&'static str, u8>;
 
@@ -86,7 +85,6 @@ fn get_rev_number_hash_map() -> NumberMap {
     res
 }
 
-
 fn _flip_str(s: &str) -> String {
     s.chars().rev().collect()
 }
@@ -95,8 +93,6 @@ fn get_calibration_value2(s: &str) -> u32 {
     let a = 10 * _get_cv_helper(s, get_number_hash_map());
     let b = _get_cv_helper(_flip_str(s).as_str(), get_rev_number_hash_map());
     a + b
-    
-    
 }
 
 fn _get_cv_helper(s: &str, number_map: NumberMap) -> u32 {

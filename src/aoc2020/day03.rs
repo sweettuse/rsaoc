@@ -42,7 +42,7 @@ fn calc_trees(fname: &str, right: usize, down: usize)  -> i32 {
     count
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, PartialEq)]
 enum Terrain {
     Open,
     Tree,
