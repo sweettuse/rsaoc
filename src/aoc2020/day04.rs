@@ -2,13 +2,14 @@ use std::collections::{HashMap, HashSet};
 
 use crate::utils::read_file20;
 
-pub fn main() {
+pub fn main() -> i32 {
     // println!("{:?}", read_file20("04.txt.test"));
     let res: i32 = 
         _get_data("04.txt")
         .iter()
         .map(|v| _is_valid(v) as i32)
         .sum() ;
+    res
     // println!("{:?}", res)
 }
 

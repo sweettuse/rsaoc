@@ -1,4 +1,4 @@
-use std::str::{FromStr, Split};
+use std::str::FromStr;
 use crate::utils::read_file20;
 
 pub fn main() -> (i32, i32) {

@@ -1,8 +1,10 @@
+#![allow(unused_imports, dead_code)]
 
 pub mod utils;
-pub mod aoc2022;
+// pub mod aoc2022;
 pub mod aoc2020;
 pub mod aoc2023;
+pub mod play;
 pub use fs_err;
 
 macro_rules! run20 {
@@ -20,12 +22,18 @@ macro_rules! run {
 fn main() {
     run_aoc2020();
     run_aoc2023();
+    run_play();
     println!("============================");
+}
+
+fn run_play() {
+    println!("============play============");
 }
 
 fn run_aoc2023() {
     println!("============2023============");
     run!(day01);
+    run!(day02);
 }
 
 fn run_aoc2020() {

@@ -5,7 +5,7 @@ const BASE_PATH: &str = "/Users/acushner/software/rust/rsaoc/input";
 #[macro_export]
 macro_rules! print1 {
     ($v:expr) => {
-        println!("'{}': {:?}", stringify!($v), $v);
+        println!("'{}' -> {:?}", stringify!($v), $v);
     };
 }
 

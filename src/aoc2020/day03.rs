@@ -62,7 +62,6 @@ impl Terrain {
 #[derive(Debug)]
 struct TreeMap {
     layout: HashMap<(usize, usize), Terrain>,
-    max_r: usize,
     max_c: usize,
 }
 
@@ -74,7 +73,6 @@ impl TreeMap {
     pub fn from_fname(fname: &str) -> Self {
         let data = read_file20(fname);
         let mut res: HashMap<_, _> = HashMap::new();
-        let max_r = data.len();
         let mut max_c = 0;
 
 
@@ -84,7 +82,7 @@ impl TreeMap {
                 res.insert((r, c), Terrain::from_char(chr));
             }
         }
-        TreeMap { layout: res, max_r, max_c }
+        TreeMap { layout: res, max_c }
     }
 }
 
