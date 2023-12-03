@@ -34,6 +34,7 @@ fn run_aoc2023() {
     println!("============2023============");
     run!(day01);
     run!(day02);
+    run!(day03);
 }
 
 fn run_aoc2020() {
