@@ -42,6 +42,7 @@ fn run_aoc2020() {
     run20!(day02);
     run20!(day03);
     run20!(day04);
+    run20!(day04_alt);
 }
 // fn main_orig() {
 //     println!("Hello, world!");

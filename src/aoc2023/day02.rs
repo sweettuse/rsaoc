@@ -21,10 +21,10 @@ fn part1(path: &str) -> u32 {
     _get_data(path)
     .iter()
     .filter_map(|g| {
-        match g.is_valid(&max_reveal) {
-            true => Some(g.id),
-            false => None
+        if g.is_valid(&max_reveal) {
+            return Some(g.id);
         }
+        None
     })
     .sum()
 }
@@ -52,7 +52,7 @@ struct Game {
     reveals: Vec<Reveal>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 struct Reveal {
     red: u32,
     green: u32,
@@ -65,7 +65,7 @@ impl Game {
     }
 
     fn bounding_reveal(&self) -> Reveal {
-        let mut res = Reveal { red: 0, green: 0, blue: 0 };
+        let mut res = Reveal::default();
         for g in self.reveals.iter() {
             res = res.update_max_of(g);
         }
@@ -134,9 +134,10 @@ fn _parse_line(input: &str) -> IResult<&str, Game> {
             map.insert(color, count);
         }
         reveals.push(Reveal {
-            red: *map.get("red").unwrap_or(&0),
-            green: *map.get("green").unwrap_or(&0),
-            blue: *map.get("blue").unwrap_or(&0),
+            // red: *map.get("red").unwrap_or(&0),
+            red: map.get("red").copied().unwrap_or_default(),
+            green: map.get("green").copied().unwrap_or_default(),
+            blue: map.get("blue").copied().unwrap_or_default(),
         })
     }
     Ok((input, Game { id, reveals }))
@@ -147,7 +148,7 @@ fn _parse_game_id(input: &str) -> IResult<&str, u32> {
     let (input, _) = tag("Game ")(input)?;
     let (input, id) = take_until(":")(input)?;
     let (input, _) = _skip_to_next_int(input)?;
-    Ok((input, id.parse::<u32>().expect("an integer")))
+    Ok((input, id.parse().expect("an integer")))
 }
 
 fn _parse_reveal(cube_count: &str) -> (u32, &str) {

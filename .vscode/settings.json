@@ -1,4 +1,5 @@
 {
+    "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
     "rust-analyzer.linkedProjects": [
         "./Cargo.toml",
         "./Cargo.toml",
