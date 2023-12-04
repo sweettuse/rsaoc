@@ -26,16 +26,18 @@ fn main() {
     println!("============================");
 }
 
-fn run_play() {
-    println!("============play============");
-}
-
 fn run_aoc2023() {
     println!("============2023============");
     run!(day01);
     run!(day02);
     run!(day03);
+    run!(day04);
 }
+
+fn run_play() {
+    println!("============play============");
+}
+
 
 fn run_aoc2020() {
     println!("============2020============");
