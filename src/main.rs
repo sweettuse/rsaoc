@@ -9,13 +9,21 @@ pub use fs_err;
 
 macro_rules! run20 {
     ($day:ident) => {
-        println!("aoc2020: {:?}: {:?}", stringify!($day), aoc2020::$day::main());
+        println!(
+            "aoc2020: {:?}: {:?}",
+            stringify!($day),
+            aoc2020::$day::main()
+        );
     };
 }
 
 macro_rules! run {
     ($day:ident) => {
-        println!("aoc2023: {:?}: {:?}", stringify!($day), aoc2023::$day::main());
+        println!(
+            "aoc2023: {:?}: {:?}",
+            stringify!($day),
+            aoc2023::$day::main()
+        );
     };
 }
 
@@ -33,12 +41,12 @@ fn run_aoc2023() {
     run!(day03);
     run!(day04);
     run!(day05);
+    run!(day06);
 }
 
 fn run_play() {
     println!("============play============");
 }
-
 
 fn run_aoc2020() {
     println!("============2020============");
@@ -62,5 +70,3 @@ fn run_aoc2020() {
 //     println!("ftl: day 02 {:?}", aoc2022::fasterthanlime::day02::day02());
 
 // }
-
-
