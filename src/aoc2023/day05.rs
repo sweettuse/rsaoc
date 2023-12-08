@@ -74,12 +74,14 @@ struct Resource {
     value: u64,
 }
 
+/// allow conversions between typed ranges
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 struct Pair {
     from: Range,
     to: Range,
 }
 
+/// resource and its range
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 struct Range {
     type_: ResourceType,
@@ -87,12 +89,14 @@ struct Range {
     range: u64,
 }
 
+/// all the mappings from/to resources in a pair
 #[derive(Debug, Default)]
 struct ResourceMap {
     data: HashMap<(ResourceType, ResourceType), Vec<Pair>>,
     graph: HashMap<ResourceType, ResourceType>,
 }
 
+/// the whole shebang
 #[derive(Debug, Default)]
 struct Almanac {
     seeds: Vec<u64>,

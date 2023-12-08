@@ -1,4 +1,9 @@
 ## 2023
+### day 07
+- in sorting i need to keep calculating, e.g., hand_types/card_ranks when sorting
+    - is there a rustic way to cache these values on the struct? and maybe make the struct
+    immutable?
+
 ### day 02
 - SOLUTION (thanks collin) - copy the get:
     ```rust
