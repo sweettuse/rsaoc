@@ -1,4 +1,10 @@
 ## 2023
+### day 08
+- in `FromStr`, what's a good default for `type Err = ...`
+like i cannot figure out what the hell this should be.
+in python i would jam `Exception` in there and call it a day.
+what's the equivalent in rust?
+
 ### day 07
 - in sorting i need to keep calculating, e.g., hand_types/card_ranks when sorting
     - is there a rustic way to cache these values on the struct? and maybe make the struct

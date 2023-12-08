@@ -8,7 +8,7 @@ use strum_macros::EnumIter;
 use crate::print1;
 use crate::utils::read_file23;
 
-type AocRes = Result<u64, String>;
+pub type AocRes = Result<u64, String>;
 
 pub fn main() -> (AocRes, AocRes) {
     (part1(), part2())

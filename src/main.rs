@@ -43,6 +43,7 @@ fn run_aoc2023() {
     run!(day05);
     run!(day06);
     run!(day07);
+    run!(day08);
 }
 
 fn run_play() {
