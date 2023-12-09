@@ -1,4 +1,5 @@
 use cached::cached;
+use once_cell::sync::Lazy;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 
@@ -17,11 +18,7 @@ pub fn main() -> (AocRes, AocRes) {
 fn part1() -> AocRes {
     let mut cards = _get_data("07.txt");
     cards.sort();
-    let res = cards
-        .iter()
-        .zip(1..)
-        .map(|(c, m)| c.bid * m)
-        .sum::<u64>();
+    let res = cards.iter().zip(1..).map(|(c, m)| c.bid * m).sum::<u64>();
 
     Ok(res)
 }
@@ -43,13 +40,13 @@ struct Hand {
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum HandType {
-    FiveOfAKind = 7,
-    FourOfAKind = 6,
-    FullHouse = 5,
-    ThreeOfAKind = 4,
-    TwoPair = 3,
-    OnePair = 2,
-    HighCard = 1,
+    HighCard,
+    OnePair,
+    TwoPair,
+    ThreeOfAKind,
+    FullHouse,
+    FourOfAKind,
+    FiveOfAKind,
 }
 
 impl Hand {
@@ -67,21 +64,18 @@ impl Hand {
             [2, 3] => HandType::FullHouse,
             [1, 1, 3] => HandType::ThreeOfAKind,
             [1, 2, 2] => HandType::TwoPair,
+            [1, 1, 1, 2] => HandType::OnePair,
             [1, 1, 1, 1, 1] => HandType::HighCard,
-            v => {
-                if v.contains(&2) {
-                    HandType::OnePair
-                } else {
-                    panic!("uh oh")
-                }
-            }
+            v => panic!("unexpected hand: {v:?}"),
         }
         // todo!()
     }
 
     fn card_ranks(&self) -> Vec<u64> {
-        let m = card_val_map();
-        self.cards.chars().map(|c| *m.get(&c).unwrap()).collect()
+        self.cards
+            .chars()
+            .map(|c| *CARD_MAP.get(&c).unwrap())
+            .collect()
     }
 
     fn _count_cards(&self) -> Vec<i32> {
@@ -95,15 +89,14 @@ impl Hand {
     }
 }
 
-cached! {
-    CARD_MAP;
-    fn card_val_map() -> HashMap<char, u64> = {
-        let cards = "23456789TJQKA";
-        let mut res: HashMap<_, _> = HashMap::new();
-        cards.chars().zip(0..).for_each(|(c, v)| { res.insert(c, v); });
-        res
-    }
-}
+static CARD_MAP: Lazy<HashMap<char, u64>> = Lazy::new(|| {
+    let cards = "23456789TJQKA";
+    let mut res: HashMap<_, _> = HashMap::new();
+    cards.chars().zip(0..).for_each(|(c, v)| {
+        res.insert(c, v);
+    });
+    res
+});
 
 impl PartialEq for Hand {
     fn eq(&self, other: &Self) -> bool {

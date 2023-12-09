@@ -1,5 +1,5 @@
 {
-    "workbench.colorTheme": "GitHub Dark Colorblind (Beta)",
+    "workbench.colorTheme": "Default Dark Modern",
     "rust-analyzer.linkedProjects": [
         "./Cargo.toml",
         "./Cargo.toml",
