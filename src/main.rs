@@ -6,6 +6,7 @@ pub mod aoc2020;
 pub mod aoc2023;
 pub mod play;
 pub use fs_err;
+use std::time::Instant;
 
 macro_rules! run20 {
     ($day:ident) => {
@@ -19,10 +20,12 @@ macro_rules! run20 {
 
 macro_rules! run {
     ($day:ident) => {
+        let start = Instant::now();
         println!(
-            "aoc2023: {:?}: {:?}",
+            "aoc2023: {:?}: {:?} took {:?}µs",
             stringify!($day),
-            aoc2023::$day::main()
+            aoc2023::$day::main(),
+            start.elapsed().as_micros(),
         );
     };
 }
@@ -36,6 +39,7 @@ fn main() {
 
 fn run_aoc2023() {
     println!("============2023============");
+    let start = Instant::now();
     run!(day01);
     run!(day02);
     run!(day03);
@@ -47,6 +51,7 @@ fn run_aoc2023() {
     run!(day08);
     run!(day09);
     run!(day10);
+    println!("advent of code 2023 took {:?}", start.elapsed());
 }
 
 fn run_play() {

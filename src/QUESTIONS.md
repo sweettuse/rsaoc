@@ -1,4 +1,21 @@
 ## 2023
+### day 09
+- in the below code, is there a way to write this using an iterator that somehow 
+breaks when there's nothing more to do?
+```rust
+fn extrapolate<F>(nums: &[i32], extrap_fn: F) -> i32 
+where
+    F : Fn(Vec<Vec<i32>>) -> i32
+{
+    let mut all_diffs: Vec<Vec<i32>> = vec![];
+    all_diffs.push(Vec::from(nums));
+    while let Some(diffs) = _get_diffs(all_diffs.last().unwrap()) {
+        all_diffs.push(diffs);
+    }
+    extrap_fn(all_diffs)
+}
+```
+
 ### day 08
 - in `FromStr`, what's a good default for `type Err = ...`
 like i cannot figure out what the hell this should be.
@@ -7,8 +24,9 @@ what's the equivalent in rust?
 
 ### day 07
 - in sorting i need to keep calculating, e.g., hand_types/card_ranks when sorting
-    - is there a rustic way to cache these values on the struct? and maybe make the struct
-    immutable?
+    - is there a rustic way to cache these values on the struct?
+    - ~and maybe make the struct immutable?~ no there is not, basically module-level open,
+      but keep private to that scope
 
 ### day 02
 - SOLUTION (thanks collin) - copy the get:

@@ -1,5 +1,7 @@
 use std::iter::repeat;
 
+use itertools::{unfold, Itertools};
+
 use crate::{print1, utils::read_file23};
 
 pub type AocRes = Result<i32, String>;
@@ -19,12 +21,11 @@ fn part2() -> AocRes {
 }
 
 // extrapolate the next value in the series
-fn extrapolate<F>(nums: &[i32], extrap_fn: F) -> i32 
+fn extrapolate<F>(nums: &[i32], extrap_fn: F) -> i32
 where
-    F : Fn(Vec<Vec<i32>>) -> i32
+    F: Fn(Vec<Vec<i32>>) -> i32,
 {
-    let mut all_diffs: Vec<Vec<i32>> = vec![];
-    all_diffs.push(Vec::from(nums));
+    let mut all_diffs = vec![Vec::from(nums)];
     while let Some(diffs) = _get_diffs(all_diffs.last().unwrap()) {
         all_diffs.push(diffs);
     }
@@ -37,7 +38,10 @@ fn _calc_next(nums: Vec<Vec<i32>>) -> i32 {
 
 fn _calc_prev(nums: Vec<Vec<i32>>) -> i32 {
     let signs = repeat(vec![1, -1]).flatten().cycle();
-    nums.iter().zip(signs).map(|(nums, sign)| nums.first().unwrap() * sign).sum()
+    nums.iter()
+        .zip(signs)
+        .map(|(nums, sign)| nums.first().unwrap() * sign)
+        .sum()
 }
 
 // get diffs between adjacent numbers
@@ -51,7 +55,7 @@ fn _get_diffs(nums: &Vec<i32>) -> Option<Vec<i32>> {
 
     match res.iter().any(|v| *v != 0) {
         true => Some(res),
-        _ => None
+        _ => None,
     }
 }
 

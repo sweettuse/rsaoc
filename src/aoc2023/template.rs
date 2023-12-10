@@ -15,5 +15,5 @@ fn part2() -> AocRes {
 }
 
 fn _get_data(fname: &str) {
-    let lines = read_file23(fname);
+    let _lines = read_file23(fname);
 }

@@ -9,6 +9,17 @@ macro_rules! print1 {
     };
 }
 
+#[macro_export]
+macro_rules! tprint {
+    ($($v:expr),*) => {
+        let mut strings = vec![];
+        $(
+            strings.push(format!("{} => {:?}", stringify!($v), $v));
+        )*
+        println!("{}", strings.join(" ||| "));
+    };
+}
+
 // read file and split by lines
 pub fn read_file(path: &str, year: u16) -> Vec<String> {
     let contents = fs::read_to_string(_full_path(path, year)).expect("file read");
