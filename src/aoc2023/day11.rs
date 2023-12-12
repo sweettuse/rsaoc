@@ -19,7 +19,11 @@ fn part2() -> AocRes {
 fn _both(fname: &str, expansion_coefficient: i64) -> AocRes {
     let universe = _get_data(fname, expansion_coefficient);
     // tprint!(universe.get_all_occupied());
-    let res: i64 = universe.calc_pairs().iter().map(|(p1, p2)| universe.calc_distance(*p1, *p2)).sum();
+    let res: i64 = universe
+        .calc_pairs()
+        .iter()
+        .map(|(p1, p2)| universe.calc_distance(*p1, *p2))
+        .sum();
     Ok(res)
 }
 
@@ -48,9 +52,6 @@ struct Universe {
 #[derive(Debug)]
 struct Expansion(Vec<i64>);
 
-#[derive(Debug)]
-struct Cell {}
-
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 struct Point {
     x: i64,
@@ -73,7 +74,7 @@ impl Universe {
         let occupied = self.get_all_occupied();
         let mut res = vec![];
         for i in 0..occupied.len() {
-            for j in i+1..occupied.len() {
+            for j in i + 1..occupied.len() {
                 res.push((occupied[i], occupied[j]));
             }
         }
@@ -81,12 +82,13 @@ impl Universe {
     }
 
     fn get_all_occupied(&self) -> Vec<Point> {
-        self.umap.iter().filter_map(|(p, obj)| {
-            match obj {
-                Object::Galaxy=> Some(*p),
+        self.umap
+            .iter()
+            .filter_map(|(p, obj)| match obj {
+                Object::Galaxy => Some(*p),
                 _ => None,
-            }
-        }).collect()
+            })
+            .collect()
     }
 }
 
