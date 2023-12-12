@@ -2,6 +2,50 @@
 ### day 10
 - what are the differences between `()`, `[]`, `{}`?
     - especially in like `vec![]` vs `hashset!{}`
+- how can i better approach a graph data structure in rust?
+    - i basically want to have the graph own cells but then have those cells connected to other cells?
+    - use `RC`?
+```rust
+    /// go through all the nodes and connect them to other nodes
+    fn _connect_nodes(mut self) -> Self {
+        let mut point_neighbors_map: HashMap<_, Vec<Point>> = HashMap::new();
+        self.graph.values().for_each(|node| {
+            point_neighbors_map.insert(node.point, node.neighbors().to_vec());
+        });
+        point_neighbors_map.iter().for_each(|(from, neighbors)| {
+            neighbors.iter().for_each(|n| {
+                self._connect(from, n);
+            });
+        });
+        self
+    }
+
+    /// connect a node to its neighbor and vice versa
+    fn _connect(&mut self, point: &Point, neighbor: &Point) {
+        //! check if each point is in the graph AND each node at those points contains
+        //! the other as a neighbor
+        match (self.graph.get(point), self.graph.get(neighbor)) {
+            (Some(p), Some(n)) => {
+                if !(p.neighbors().contains(&n.point) && n.neighbors().contains(&p.point)) {
+                    return;
+                }
+            },
+            (_, _) => return,
+        };
+
+        let mut _update = |p, n: &Point| {
+            self.graph
+                .get_mut(p)
+                .unwrap()
+                .connections
+                .insert(*n);
+
+        };
+        _update(point, neighbor);
+        _update(neighbor, point);
+    }
+```
+
 ### day 09
 - in the below code, is there a way to write this using an iterator that somehow 
 breaks when there's nothing more to do?
