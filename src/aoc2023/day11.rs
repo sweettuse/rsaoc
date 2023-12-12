@@ -19,12 +19,11 @@ fn part2() -> AocRes {
 fn _both(fname: &str, expansion_coefficient: i64) -> AocRes {
     let universe = _get_data(fname, expansion_coefficient);
     // tprint!(universe.get_all_occupied());
-    let res: i64 = universe
+    Ok(universe
         .calc_pairs()
         .iter()
         .map(|(p1, p2)| universe.calc_distance(*p1, *p2))
-        .sum();
-    Ok(res)
+        .sum())
 }
 
 fn _get_data(fname: &str, expansion_coefficient: i64) -> Universe {
