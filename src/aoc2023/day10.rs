@@ -16,7 +16,6 @@ pub fn main() -> (AocRes, AocRes) {
 
 fn part1() -> AocRes {
     let mut system = _get_data("10.txt");
-    system.traverse();
     Ok(system.part1())
 }
 
@@ -84,7 +83,8 @@ impl System {
         res._connect_nodes()
     }
 
-    fn part1(&self) -> u32 {
+    fn part1(&mut self) -> u32 {
+        self.calc_distance();
         self
             .graph
             .values()
@@ -93,7 +93,9 @@ impl System {
             .unwrap()
     }
 
-    fn traverse(&mut self) {
+    // BFS the path from the start around the loop and calculate the distance
+    // to each node
+    fn calc_distance(&mut self) {
         let mut to_check = VecDeque::from(vec![(self.start, 0u32)]);
         while let Some((p, distance)) = to_check.pop_front() {
             if let Some(node) = self.graph.get_mut(&p) {
@@ -111,7 +113,7 @@ impl System {
     }
 }
 
-/// initialization logic/"private interface?"
+/// initialization logic/"private interface"?
 impl System {
     /// create the unconnected graph.
     /// return the graph and the starting point
@@ -144,12 +146,7 @@ impl System {
     fn _connect_nodes(mut self) -> Self {
         let mut point_neighbors_map: HashMap<_, Vec<Point>> = HashMap::new();
         self.graph.values().for_each(|node| {
-            node.neighbors().iter().for_each(|point| {
-                point_neighbors_map
-                    .entry(node.point)
-                    .or_insert(vec![])
-                    .push(*point);
-            })
+            point_neighbors_map.insert(node.point, node.neighbors().to_vec());
         });
         point_neighbors_map.iter().for_each(|(from, neighbors)| {
             neighbors.iter().for_each(|n| {
@@ -161,18 +158,18 @@ impl System {
 
     /// connect a node to its neighbor and vice versa
     fn _connect(&mut self, point: &Point, neighbor: &Point) {
+        //! check if each point is in the graph AND each node at those points contains
+        //! the other as a neighbor
         match (self.graph.get(point), self.graph.get(neighbor)) {
             (Some(p), Some(n)) => {
-                if !p.neighbors().contains(&n.point) || !n.neighbors().contains(&p.point) {
+                if !(p.neighbors().contains(&n.point) && n.neighbors().contains(&p.point)) {
                     return;
                 }
             },
             (_, _) => return,
         };
-        if !(self.graph.contains_key(point) && self.graph.contains_key(neighbor)) {
-            return;
-        }
-        let mut update = |p, n: &Point| {
+
+        let mut _update = |p, n: &Point| {
             self.graph
                 .get_mut(p)
                 .unwrap()
@@ -180,10 +177,11 @@ impl System {
                 .insert(*n);
 
         };
-        update(point, neighbor);
-        update(neighbor, point);
+        _update(point, neighbor);
+        _update(neighbor, point);
     }
 
+    /// get the string representation of the graph like the problem
     fn debug_str(&self) -> String {
         let x_max = self.graph.values().map(|n| n.point.x).max().unwrap();
         let y_max = self.graph.values().map(|n| n.point.y).max().unwrap();
@@ -224,6 +222,10 @@ impl Sub for Point {
     }
 }
 
+// =============================================================================
+// TESTS
+// =============================================================================
+
 #[cfg(test)]
 mod test {
 
@@ -240,42 +242,19 @@ mod test {
     #[test]
     fn test_pipe_map() {
         assert_eq!(*PIPE_MAP.get(&'7').unwrap(), (p(-1, 0), p(0, 1)));
-
-        // PIPE_MAP.iter().map(|(k, (p1, p2))| {
-        //     let mut m = HashMap::new();
-        //     let cur = p(1, 1);
-        //     m.insert(cur, k);
-        //     m.insert(*p1 +cur , &'*');
-        //     m.insert(*p2 +cur, &'*');
-        //     m
-        // }).for_each(|m| {
-        //     for y in 0..3 {
-        //         let mut s = String::new();
-        //         for x in 0..3 {
-        //             s.push(match m.get(&p(x, y)) {
-        //                 Some(c) => **c,
-        //                 None => '.',
-        //             });
-        //         }
-        //         println!("{}", s);
-        //     }
-        //     println!();
-        // }) ;
-
-
     }
 
     #[test]
     fn test_example_1() {
         let mut system = _get_data("10.txt.a");
-        system.traverse();
+        system.calc_distance();
         assert_eq!(system.part1(), 4);
     }
 
     #[test]
     fn test_example_2() {
         let mut system = _get_data("10.txt.test1");
-        system.traverse();
+        system.calc_distance();
         assert_eq!(system.part1(), 8);
     }
 

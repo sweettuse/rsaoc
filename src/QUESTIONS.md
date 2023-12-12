@@ -1,4 +1,7 @@
 ## 2023
+### day 10
+- what are the differences between `()`, `[]`, `{}`?
+    - especially in like `vec![]` vs `hashset!{}`
 ### day 09
 - in the below code, is there a way to write this using an iterator that somehow 
 breaks when there's nothing more to do?

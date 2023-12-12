@@ -1,4 +1,5 @@
 #![allow(unused_imports, dead_code)]
+#[macro_use] extern crate maplit;
 
 pub mod utils;
 // pub mod aoc2022;
@@ -51,6 +52,8 @@ fn run_aoc2023() {
     run!(day08);
     run!(day09);
     run!(day10);
+    run!(day10_alt);
+    run!(day11);
     println!("advent of code 2023 took {:?}", start.elapsed());
 }
 

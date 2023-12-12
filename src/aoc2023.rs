@@ -9,3 +9,5 @@ pub mod day07_alt;
 pub mod day08;
 pub mod day09;
 pub mod day10;
+pub mod day10_alt;
+pub mod day11;
