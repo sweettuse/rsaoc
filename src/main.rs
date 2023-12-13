@@ -51,7 +51,6 @@ fn run_aoc2023() {
     run!(day08);
     run!(day09);
     run!(day10);
-    run!(day10_alt);
     run!(day11);
     run!(day11_faster);
     println!("advent of code 2023 took {:?}", start.elapsed());
