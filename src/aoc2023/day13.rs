@@ -19,52 +19,38 @@ fn part1() -> AocRes {
 
 fn part2() -> AocRes {
     let notes = _get_data("13.txt");
-    let p = notes.patterns.first().unwrap();
-    // tprint!(p.rows);
-    // tprint!(p.cols);
-    // tprint!(p.value2());
-    // println!("{:b}", 346);
-    // println!("00{:b}", 90);
-    // tprint!(Pattern::_find_reflection(&[281, 265, 103, 502, 502, 103, 281]));
-
-    // let p = &notes.patterns[0];
-    // for axis in Axis::iter() {
-    //     println!("{}", "=".repeat(30));
-    //     tprint!(axis);
-    //     let source = match axis {
-    //         Axis::Row => &p.rows,
-    //         Axis::Col => &p.cols,
-    //     };
-    //     tprint!(source);
-    //     let res = Pattern::_find_reflection(source);
-    //     tprint!(res);
-    //     show_grid(source);
-    //     // println!("{:012b}", source[0]);
-    //     for vals__ in p._sub_off_by_ones(axis) {
-    //         println!("{}", "-".repeat(30));
-    //         tprint!(vals__);
-    //         let res = Pattern::_find_reflection(&vals__);
-    //         tprint!(res);
-    //         show_grid(&vals__);
-    //         // show_axis(&vals__[0]);
-    //         // println!("{:012b}", vals__[0]);
-    //         // println!();
-    //         // tprint!();
-    //     }
-    // }
-
-    // Err("unsolved".to_string())
     Ok(notes.patterns.iter().map(Pattern::value2).sum())
 }
 
-fn show_grid(vals: &[u32]) {
-    vals.iter().for_each(show_axis);
+fn _debug_pattern(p: &Pattern) {
+    for axis in Axis::iter() {
+        println!("{}", "=".repeat(30));
+        tprint!(axis);
+        let source = match axis {
+            Axis::Row => &p.rows,
+            Axis::Col => &p.cols,
+        };
+        tprint!(source);
+        let res = Pattern::_find_reflection(source, None);
+        tprint!(res);
+        _show_grid(source);
+        for vals__ in p._sub_off_by_ones(axis) {
+            println!("{}", "-".repeat(30));
+            tprint!(vals__);
+            let res = Pattern::_find_reflection(&vals__, None);
+            tprint!(res);
+            _show_grid(&vals__);
+        }
+    }
 }
 
-fn show_axis(val: &u32) {
-    let s = format!("{:012b}", val);
-    println!("{:?}", s.replace('0', ".").replace('1', "#"));
+fn _show_grid(vals: &[u32]) {
+    vals.iter().for_each(_show_axis);
+}
 
+fn _show_axis(val: &u32) {
+    let s = format!("{:020b}", val);
+    println!("{:?}", s.replace('0', ".").replace('1', "#"));
 }
 
 #[derive(EnumIter, Debug, Clone, Copy, PartialEq, Eq)]
@@ -120,13 +106,7 @@ impl Pattern {
                 Axis::Col => &self.cols,
             };
 
-            if let Some(res) = Self::_find_reflection(source) {
-                // let end = source.len();
-                // let slice = match axis {
-                //     Axis::Row => res as usize..end,
-                //     Axis::Col => 0_usize..(res as usize) + 1,
-                // };
-                // tprint!(res, &source[slice]);
+            if let Some(res) = Self::_find_reflection(source, None) {
                 return res
                     * match axis {
                         Axis::Row => 100,
@@ -138,19 +118,20 @@ impl Pattern {
     }
 
     fn value2(&self) -> u32 {
+        // gross hack to back out of the original axis the match was found on
         let orig_res = self.value();
         let (orig_axis, orig_res) = match orig_res >= 100 {
             true => (Axis::Row, orig_res / 100),
             false => (Axis::Col, orig_res),
         };
-        // tprint!(orig_res, orig_axis);
 
         for axis in Axis::iter() {
+            let invalid = match axis == orig_axis {
+                true => Some(orig_res),
+                false => None,
+            };
             for replaced in self._sub_off_by_ones(axis) {
-                if let Some(res) = Self::_find_reflection(&replaced) {
-                    if orig_axis == axis && orig_res == res {
-                        continue;
-                    }
+                if let Some(res) = Self::_find_reflection(&replaced, invalid) {
                     return res
                         * match axis {
                             Axis::Row => 100,
@@ -159,21 +140,24 @@ impl Pattern {
                 }
             }
         }
-        panic!("nothing found!");
+        _debug_pattern(self);
+        panic!("nothing found value 2!");
     }
+
     fn _sub_off_by_ones(&self, axis: Axis) -> Vec<Vec<u32>> {
         let source = match axis {
             Axis::Row => &self.rows,
             Axis::Col => &self.cols,
         };
 
-        self.calc_diff_pairs(source)
+        self._calc_diff_by_one_pairs(source)
             .iter()
             .copied()
             .flat_map(|(a, b)| Self::_replace(source, a, b))
             .collect()
     }
 
+    /// generate all possible off-by-one-bit substitutions
     fn _replace(vals: &[u32], a: u32, b: u32) -> Vec<Vec<u32>> {
         vals.iter()
             .copied()
@@ -189,17 +173,17 @@ impl Pattern {
 
                 let mut cur = Vec::from(vals);
                 cur[i] = replacement;
-                // println!("{}", "-".repeat(30));
-                // tprint!(a, b);
-                // println!("orig: {:?}", vals);
-                // println!("new : {:?}", cur);
                 Some(cur)
             })
             .collect()
     }
 
     /// get pairs of numbers that are off by one
-    fn calc_diff_pairs(&self, v: &[u32]) -> Vec<(u32, u32)> {
+    /// because each row/col is represented by a single binary number AND i'm
+    /// looking for a change that results in a palindrome, i need to find all pairs
+    /// of numbers that differ by exactly one bit. because if i flip that they'll match
+    /// and thus possibly leading to a palindrome
+    fn _calc_diff_by_one_pairs(&self, v: &[u32]) -> Vec<(u32, u32)> {
         let unique = v
             .iter()
             .copied()
@@ -221,23 +205,11 @@ impl Pattern {
             })
             .collect()
     }
-
-    fn display_diff_pairs(&self) {
-        println!("{}", "-".repeat(30));
-        println!("rows");
-        self.calc_diff_pairs(&self.rows).iter().for_each(|pair| {
-            println!("{:?}", pair);
-        });
-        println!("cols");
-        self.calc_diff_pairs(&self.cols).iter().for_each(|pair| {
-            println!("{:?}", pair);
-        });
-        println!();
-    }
 }
 
 /// helpers
 impl Pattern {
+    /// hashes an axis by converting each row/col to a binary number where '#' => 1 and '.' => 0
     fn _get_axis_hash(data: &[Vec<char>]) -> Vec<u32> {
         data.iter()
             .map(|row| {
@@ -253,27 +225,44 @@ impl Pattern {
             .collect()
     }
 
-    fn _find_reflection(source: &[u32]) -> Option<u32> {
+    fn _find_reflection(source: &[u32], invalid: Option<u32>) -> Option<u32> {
         let r = reversed(source);
-        if let Some(res) = Self::_find_reflection_helper(source, &r) {
-            return Some(res + (source.len() as u32 - res) / 2);
+
+        // this pass checks all possible valid palindromes that *end* the pattern
+        for res in Self::_find_reflection_helper(source, &r) {
+            let final_res = res + (source.len() as u32 - res) / 2;
+            if invalid.is_some_and(|v| v == final_res) {
+                continue;
+            }
+            return Some(final_res);
         }
 
-        if let Some(res) = Self::_find_reflection_helper(&r, source) {
-            return Some((source.len() as u32 - res) / 2);
+        // this pass checks all possible valid palindromes that *begin* the pattern
+        for res in Self::_find_reflection_helper(&r, source) {
+            let final_res = (source.len() as u32 - res) / 2;
+            if invalid.is_some_and(|v| v == final_res) {
+                continue;
+            }
+            return Some(final_res);
         }
         None
     }
 
-    fn _find_reflection_helper(source: &[u32], r: &[u32]) -> Option<u32> {
+    /// palindrome - crazy implementation lol
+    /// i tested against the typical val == reversed(val) way and this is *slightly* faster lol
+    fn _find_reflection_helper(source: &[u32], r: &[u32]) -> Vec<u32> {
         let skip = source.len() % 2;
-        (0..source.len() - 1).skip(skip).step_by(2).find_map(|i| {
-            let found = zip(source.iter().skip(i), r.iter()).all(|(a, b)| a == b);
-            match found {
-                true => Some(i as u32),
-                false => None,
-            }
-        })
+        (0..source.len() - 1)
+            .skip(skip)
+            .step_by(2)
+            .filter_map(|i| {
+                let found = zip(source.iter().skip(i), r.iter()).all(|(a, b)| a == b);
+                match found {
+                    true => Some(i as u32),
+                    false => None,
+                }
+            })
+            .collect()
     }
 }
 
