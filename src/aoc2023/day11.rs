@@ -146,13 +146,10 @@ impl Universe {
             Expansion(res)
         };
 
-        let x_expansion = calculate_expansion(xmax, occupied_xs);
-        let y_expansion = calculate_expansion(ymax, occupied_ys);
-
         Self {
             umap,
-            x_expansion,
-            y_expansion,
+            x_expansion: calculate_expansion(xmax, occupied_xs),
+            y_expansion: calculate_expansion(ymax, occupied_ys),
         }
     }
 }
