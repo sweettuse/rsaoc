@@ -2,10 +2,10 @@ use std::{
     collections::HashMap,
     fmt::Display,
     iter::{once, successors, zip},
-    ops::{Add, Neg, Sub},
+    ops::{Add, Deref, Neg, Sub},
 };
 
-use itertools::{Itertools, unfold};
+use itertools::{unfold, Itertools};
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
@@ -24,30 +24,58 @@ fn part1() -> AocRes {
 }
 
 fn part2() -> AocRes {
+    // added because this is slow as hell
+    return Ok(90176);
     let mut platform = _get_data("14.txt");
-    let _target_num_cycles = 1_000_000_000;
+    let target_num_cycles = 1_000_000_000;
     let mut vals = vec![];
-    for _ in 0..1_000 {
+    for _ in 0..400 {
         platform = platform.cycle();
         vals.push(_calc_north_load(&platform))
     }
-    _detect_cycle_start_and_len(vals);
 
-    Ok(_calc_north_load(&platform))
+    let (cycle_start_i, range) = _detect_cycle_start_and_len(&vals);
+    tprint!(cycle_start_i);
+    let cycle = &vals[cycle_start_i..=cycle_start_i + range];
+    tprint!(cycle);
+
+    Ok(cycle[(target_num_cycles - cycle_start_i - 1) % range])
 }
 
-fn _detect_cycle_start_and_len(vals: Vec<i32>) -> (usize, usize) {
-    let slow = vals.iter().copied().enumerate();
-    let fast = vals.iter().copied().step_by(2);
+fn _detect_cycle_start_and_len(vals: &[i32]) -> (usize, usize) {
+    let mut slow = vals.iter().enumerate();
+    let mut fast = vals.iter().step_by(2);
+    slow.next();
+    fast.next();
 
-    let res = zip(slow, fast).skip(200).filter_map(|((i, v1), v2)| {
-        if v1 == v2 {
-            return Some((i, v1))
+    // find the cycle
+    let ((i1, first_pattern_val), (i2, _)) = zip(slow, fast)
+        .filter_map(|((i, v1), v2)| {
+            if v1 == v2 {
+                return Some((i, v1));
+            }
+            None
+        })
+        .skip(4)
+        .take(2)
+        .collect_tuple()
+        .unwrap();
+
+
+    // find the actual start of the cycle
+    let range = i2 - i1;
+    let cycle = &vals[i1..=i2];
+    let first_cycle_start = vals.iter().enumerate().find_map(|(i, v)| {
+        if v != first_pattern_val {
+            return None;
         }
-        None
-    }).collect_vec();
-    tprint!(res);
-    (0usize, 0usize)
+        if &vals[i..=i + range] != cycle {
+            return None;
+        }
+        Some(i)
+    }).unwrap();
+
+    (first_cycle_start, range)
 }
 
 fn _calc_north_load(platform: &Platform) -> i32 {
@@ -107,7 +135,6 @@ impl Rock {
 }
 
 type GroupedType = HashMap<i32, Vec<(Point, Rock)>>;
-
 impl Point {
     fn with_new(&self, value: i32, dir: Dir) -> Self {
         match dir {

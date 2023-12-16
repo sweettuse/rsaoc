@@ -1,4 +1,30 @@
 ## 2023
+
+### day 15
+- you can have a mut var and mut borrow: see: 
+```rust
+    /// borrow mutable, var holding borrow not?
+    fn execute(&self, boxes: &mut [LensBox]) {
+        let b = &mut boxes[_hash(&self.label) as usize];
+        b.insert(self);
+    }
+```
+
+### day 14
+- i have a function that takes ownership of an object and returns a new one. i have the below code.
+how can i refactor this into a `(0..1000).map` formulation vs a plain old for loop:
+- should the `cycle` function even take ownership and return a new object? i did it to avoid a partial borrow of `layout`
+```rust
+fn part2() -> AocRes {
+    let mut platform = _get_data("14.txt");
+    let target_num_cycles = 1_000_000_000;
+    let mut vals = vec![];
+    for _ in 0..400 {
+        platform = platform.cycle();  // takes ownership and returns a new object
+        vals.push(_calc_north_load(&platform))
+    }
+```
+
 ### day 10
 - what are the differences between `()`, `[]`, `{}`?
     - especially in like `vec![]` vs `hashset!{}`
