@@ -11,3 +11,4 @@ pub mod day10;
 pub mod day11;
 pub mod day11_faster;
 pub mod day13;
+pub mod day14;

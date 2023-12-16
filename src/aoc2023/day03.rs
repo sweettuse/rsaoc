@@ -23,6 +23,34 @@ fn part1(path: &str) -> i32 {
     part_nums.iter().map(|n| n.num).sum()
 }
 
+fn part2_new(path: &str) -> i32 {
+    let engine = _get_data(path);
+    engine.symbol_coords.iter().copied().filter_map(|sym_coord| {
+        if let Some(Value::Symbol(symbol)) = engine.get(sym_coord) {
+            if *symbol != '*' {
+                return None;
+            }
+        } else {
+            return None;
+        }
+        let surrounding: HashSet<Number> = engine
+            .get_surrounding(sym_coord)
+            .iter()
+            .filter_map(|v| match v {
+                Value::Number(n) => Some(*n),
+                _ => None,
+            })
+            .collect();
+
+        if surrounding.len() != 2 {
+            return None;
+        }
+        let (n1, n2) = surrounding.iter().map(|n| n.num).collect_tuple().unwrap();
+        Some(n1 * n2)
+        }
+    ).sum()
+}
+
 fn part2(path: &str) -> i32 {
     let engine = _get_data(path);
     let mut res = 0;
