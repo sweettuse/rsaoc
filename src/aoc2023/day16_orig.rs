@@ -1,3 +1,4 @@
+/// way over-complicated first attempt. scrapped it and went simple
 use std::{
     cell::RefCell,
     collections::{HashMap, HashSet, VecDeque},
@@ -19,6 +20,7 @@ use crate::{
 
 pub type AocRes = Result<i32, String>;
 type SharedCell = Rc<RefCell<Cell>>;
+
 
 pub fn main() -> (AocRes, AocRes) {
     (part1(), part2())

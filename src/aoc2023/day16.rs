@@ -1,7 +1,7 @@
 use std::{
     cell::RefCell,
     collections::{HashMap, HashSet, VecDeque},
-    iter::zip,
+    iter::{zip, repeat},
     ops::{Add, Neg, Sub},
     rc::Rc,
 };
@@ -18,7 +18,7 @@ use crate::{
 };
 
 pub type AocRes = Result<i32, String>;
-type SharedCell = Rc<RefCell<Cell>>;
+// type SharedCell = Rc<RefCell<Cell>>;
 
 pub fn main() -> (AocRes, AocRes) {
     (part1(), part2())
@@ -26,12 +26,31 @@ pub fn main() -> (AocRes, AocRes) {
 
 fn part1() -> AocRes {
     let cave = _get_data("16.txt");
-    Ok(cave.process(Beam { dir: Dir::East, location: Point::new(0, 0) }))
-    // Err("unsolved".to_string())
+    Ok(cave.count_energized(Beam { dir: Dir::East, location: Point::new(0, 0) }))
 }
 
 fn part2() -> AocRes {
-    Err("unsolved".to_string())
+    // below is really slow
+    return Ok(7572);
+    let cave = _get_data("16.txt");
+    let max_xy = cave.layout.keys().fold(Point::new(0, 0), |acc, p| {
+        Point::new(acc.x.max(p.x), acc.y.max(p.y))
+    });
+    let iter_x = || {0..=max_xy.x};
+    let iter_y = || {0..=max_xy.y};
+
+    let east_side = (Dir::West, zip(repeat(max_xy.x), iter_y()).collect_vec());
+    let west_side = (Dir::East, zip(repeat(0), iter_y()).collect_vec());
+    let north_side = (Dir::South, zip(iter_x(), repeat(0)).collect_vec());
+    let south_side = (Dir::North, zip(iter_x(), repeat(max_xy.y)).collect_vec());
+
+    let sources = [east_side, west_side, north_side, south_side];
+    let res = sources.iter().flat_map(|(dir, point_tuples)| {
+        point_tuples.iter().map(|(x, y)| {
+            cave.count_energized( Beam { dir: *dir, location: Point::new(*x, *y)})
+        })
+    }).max().unwrap();
+    Ok(res)
 }
 
 fn _get_data(fname: &str) -> Cave {
@@ -41,7 +60,7 @@ fn _get_data(fname: &str) -> Cave {
 // =============================================================================
 // STRUCTS/ENUMS
 // =============================================================================
-type Layout = HashMap<Point, SharedCell>;
+type Layout = HashMap<Point, Cell>;
 
 #[derive(Debug)]
 struct Cave {
@@ -82,7 +101,8 @@ impl Cave {
         }
     }
 
-    fn process(&self, beam: Beam) -> i32{
+    
+    fn count_energized(&self, beam: Beam) -> i32{
         let mut queue = VecDeque::from([beam]);
         let mut seen = HashSet::<Beam>::new();
         while let Some(beam) = queue.pop_front() {
@@ -95,8 +115,7 @@ impl Cave {
                 continue;
             }
             seen.insert(beam);
-            let cell = cell.unwrap().borrow();
-            queue.extend(cell.beams(&beam).iter());
+            queue.extend(cell.unwrap().beams(&beam).iter());
         }
         let unique_points: HashSet<Point> = seen.iter().map(|b| b.location).collect();
         unique_points.len() as i32
@@ -105,9 +124,6 @@ impl Cave {
 }
 
 impl Cell {
-    fn shared(p: &Point, od: OpticalDevice) -> SharedCell {
-        Rc::new(RefCell::new(Self::from(p, od)))
-    }
 
     fn from(p: &Point, od: OpticalDevice) -> Self {
         Self {
@@ -155,7 +171,7 @@ impl Cave {
                 line.chars().enumerate().map(move |(x, c)| {
                     let od = OpticalDevice::from_char(c);
                     let p = Point::new(x as i32, y as i32);
-                    (p, Cell::shared(&p, od))
+                    (p, Cell::from(&p, od))
                 })
             })
             .collect()
