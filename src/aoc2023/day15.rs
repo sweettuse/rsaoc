@@ -28,6 +28,14 @@ fn part2() -> AocRes {
     Ok(boxes.iter().map(LensBox::calc_focusing_power).sum())
 }
 
+fn _hash(s: impl AsRef<str>) -> u32 {
+    s.as_ref().bytes().fold(0u32, |acc, b| {
+        let mut res = acc + b as u32;
+        res *= 17;
+        res % 256
+    })
+}
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 enum Op {
     Add,
@@ -51,13 +59,6 @@ impl Op {
     }
 }
 
-fn _hash(s: impl AsRef<str>) -> u32 {
-    s.as_ref().bytes().fold(0u32, |acc, b| {
-        let mut res = acc + b as u32;
-        res *= 17;
-        res % 256
-    })
-}
 
 #[derive(Debug)]
 struct Command {

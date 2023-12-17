@@ -2,6 +2,7 @@
 #[macro_use] extern crate maplit;
 
 pub mod utils;
+pub mod point;
 // pub mod aoc2022;
 pub mod aoc2020;
 pub mod aoc2023;
@@ -56,6 +57,7 @@ fn run_aoc2023() {
     run!(day13);
     run!(day14);
     run!(day15);
+    run!(day16);
     println!("advent of code 2023 took {:?}", start.elapsed());
 }
 

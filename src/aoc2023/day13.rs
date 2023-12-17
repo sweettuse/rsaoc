@@ -90,6 +90,7 @@ impl Pattern {
             .split('\n')
             .map(|line| line.chars().collect_vec())
             .collect_vec();
+
         let transposed = (0..data[0].len())
             .map(|i| data.iter().map(|row| row[i]).collect())
             .collect_vec();
