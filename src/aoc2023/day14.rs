@@ -23,6 +23,7 @@ fn part1() -> AocRes {
     Ok(_calc_north_load(&platform))
 }
 
+#[allow(unreachable_code)]
 fn part2() -> AocRes {
     // added because this is slow as hell
     return Ok(90176);

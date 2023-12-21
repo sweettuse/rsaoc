@@ -29,9 +29,10 @@ fn part1() -> AocRes {
     }))
 }
 
+#[allow(unreachable_code)]
 fn part2() -> AocRes {
     // below is really slow
-    // return Ok(7572);
+    return Ok(7572);
     let cave = _get_data("16.txt");
     let max_xy = cave.layout.keys().fold(Point::new(0, 0), |acc, p| {
         Point::new(acc.x.max(p.x), acc.y.max(p.y))

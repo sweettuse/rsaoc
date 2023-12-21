@@ -1,5 +1,9 @@
 ## 2023
 
+(mark:: 🎷)
+(mark::❓)
+(mark::❓)
+jeb 
 ### day 15
 - you can have a mut var and mut borrow: see: 
 ```rust

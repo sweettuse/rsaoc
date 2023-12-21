@@ -33,13 +33,20 @@ impl Dir {
         _LOOKUP[_IDX_MAP[self] + normalized]
     }
 
-    fn offset(&self) -> Point {
+    pub fn offset(&self) -> Point {
         match self {
             Dir::North => Point::new(0, -1),
             Dir::South => Point::new(0, 1),
             Dir::East => Point::new(1, 0),
             Dir::West => Point::new(-1, 0),
         }
+    }
+}
+
+impl Add<Dir> for Dir {
+    type Output = Point;
+    fn add(self, rhs: Dir) -> Self::Output {
+        self.offset() + rhs.offset()
     }
 }
 
