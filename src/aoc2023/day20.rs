@@ -22,7 +22,9 @@ fn part1() -> AocRes {
     // Err("unsolved".to_string())
 }
 
+#[allow(unreachable_code)]
 fn part2() -> AocRes {
+    return Err("unsolved".to_string());
     let mut grid = _get_data("20.txt");
     grid.run(100_000);
     for (source, count) in grid
@@ -31,9 +33,8 @@ fn part2() -> AocRes {
         .sorted_by(|a, b| Ord::cmp(b.1, a.1))
     {
         tprint!(source, count);
-    }
+    };
     // Ok(grid.counter.values().product())
-    Err("unsolved".to_string())
 }
 
 fn _get_data(fname: &str) -> Grid {
@@ -236,8 +237,6 @@ impl Grid {
                         continue;
                     }
                     m.add_input(source.clone());
-                } else {
-                    println!("cannot find '{t}'!");
                 }
             }
         }
