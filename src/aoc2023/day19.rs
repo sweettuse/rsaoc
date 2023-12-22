@@ -17,3 +17,17 @@ fn part2() -> AocRes {
 fn _get_data(fname: &str) {
     let _lines = read_file23(fname);
 }
+
+#[derive(Debug)]
+struct Part {
+    x: i32,
+    m: i32,
+    a: i32,
+    s: i32,
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+}
