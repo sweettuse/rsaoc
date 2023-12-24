@@ -21,7 +21,7 @@ fn part1() -> u64 {
 /// need totally different approach
 /// idk, map out all ranges and work on them directly vs individual elements of the ranges?
 fn part2() -> Result<u64, String> {
-    Err("unsolved".to_string())
+    Err("python".to_string())
     // let almanac = Almanac::from_fname("05.txt");
     // let mut seeds: Vec<u64> = Vec::new();
     // let starts: HashSet<u64> = almanac

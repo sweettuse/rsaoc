@@ -2,9 +2,13 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 use strum::IntoEnumIterator;
 
-use crate::{utils::read_file23, point::{Point, Dir}, tprint};
+use crate::{
+    point::{Dir, Point},
+    tprint,
+    utils::read_file23,
+};
 
-pub type AocRes = Result<i32, String>;
+pub type AocRes = Result<u32, String>;
 
 pub fn main() -> (AocRes, AocRes) {
     (part1(), part2())
@@ -12,9 +16,8 @@ pub fn main() -> (AocRes, AocRes) {
 
 fn part1() -> AocRes {
     let garden = _get_data("21.txt");
-    let res =garden.walk(64u32);
-    tprint!(res.values().filter(|v| **v & 1 == 0).count());
-    Err("unsolved".to_string())
+    let res = garden.walk(64u32);
+    Ok(res.values().filter(|v| **v & 1 == 0).count() as u32)
 }
 
 fn part2() -> AocRes {
@@ -65,37 +68,35 @@ impl Garden {
                 if plot_type == PlotType::Start {
                     start = Some(Point::new(x as i32, y as i32));
                 }
-                plots.entry(plot_type).or_default().insert(Point::new(x as i32, y as i32));
+                plots
+                    .entry(plot_type)
+                    .or_default()
+                    .insert(Point::new(x as i32, y as i32));
             });
         });
 
-        Self { plots , start: start.unwrap(), lower_right: Point::new(max_x as i32, max_y as i32)}
+        Self {
+            plots,
+            start: start.unwrap(),
+            lower_right: Point::new(max_x as i32, max_y as i32),
+        }
     }
 
     fn _is_valid(&self, p: &Point) -> bool {
         self.plots.get(&PlotType::Open).unwrap().contains(p) || *p == self.start
     }
 
-    fn walk(&self, max_count: u32) -> HashMap<Point, u32>{
+    fn walk(&self, max_count: u32) -> HashMap<Point, u32> {
         let mut res: HashMap<Point, u32> = hashmap! {};
         let mut to_process = VecDeque::from([(0u32, self.start)]);
         while let Some((count, point)) = to_process.pop_front() {
-            if !self._is_valid(&point) { 
-                continue;
-            }
-            if res.contains_key(&point) {
-                continue;
-            }
-            if count > max_count {
+            if !self._is_valid(&point) || res.contains_key(&point) || count > max_count {
                 continue;
             }
 
             res.insert(point, count);
-            to_process.extend(Dir::iter().map(|d| {
-                (count + 1, point + d)
-            }));
+            to_process.extend(Dir::iter().map(|d| (count + 1, point + d)));
         }
         res
     }
 }
-

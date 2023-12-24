@@ -7,11 +7,11 @@ pub fn main() -> (AocRes, AocRes) {
 }
 
 fn part1() -> AocRes {
-    Err("unsolved".to_string())
+    Err("python".to_string())
 }
 
 fn part2() -> AocRes {
-    Err("unsolved".to_string())
+    Err("python".to_string())
 }
 
 fn _get_data(fname: &str) {

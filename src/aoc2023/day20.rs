@@ -1,14 +1,15 @@
 use std::{
     any::Any,
-    collections::{HashMap, VecDeque},
+    collections::{HashMap, HashSet, VecDeque},
     fmt::Display,
+    time::Instant,
 };
 
 use itertools::Itertools;
 
 use crate::{tprint, utils::read_file23};
 
-pub type AocRes = Result<u32, String>;
+pub type AocRes = Result<u64, String>;
 
 pub fn main() -> (AocRes, AocRes) {
     (part1(), part2())
@@ -18,23 +19,48 @@ fn part1() -> AocRes {
     let mut grid = _get_data("20.txt");
     grid.run(1_000);
     Ok(grid.counter.values().product())
-    // tprint!(grid.counter);
-    // Err("unsolved".to_string())
 }
 
 #[allow(unreachable_code)]
 fn part2() -> AocRes {
-    return Err("unsolved".to_string());
     let mut grid = _get_data("20.txt");
-    grid.run(100_000);
-    for (source, count) in grid
-        .target_counter
-        .iter()
-        .sorted_by(|a, b| Ord::cmp(b.1, a.1))
-    {
-        tprint!(source, count);
-    };
-    // Ok(grid.counter.values().product())
+    grid.run(10_000);
+    let min_run = grid
+        .relevant
+        .values()
+        .map(|hs| {
+            let diffs = _get_diffs(hs);
+            *diffs.first().unwrap()
+        })
+        .product::<u64>();
+    Ok(min_run)
+
+    // code to play around with cycle results
+    // grid.relevant.iter().for_each(|(k, hs)| {
+    //     let diffs = _get_diffs(hs);
+    //     let d = diffs.iter().next().unwrap();
+    //     let mut v = hs.iter().collect_vec();
+    //     v.sort();
+    //     println!("{}: start: {:?} cycle:{:?} is_prime: {}", k, &v[..2], diffs, primal::is_prime(*d));
+    // });
+    // for (source, count) in grid
+    //     .target_counter
+    //     .iter()
+    //     .sorted_by(|a, b| Ord::cmp(b.1, a.1))
+    // {
+    //     tprint!(source, count);
+    // };
+    // Err("unsolved".to_string())
+}
+
+fn _get_diffs(nums: &HashSet<u64>) -> Vec<u64> {
+    let mut res = nums.iter().collect_vec();
+    res.sort();
+    res.iter()
+        .tuple_windows()
+        .map(|(a, b)| **b - **a)
+        .dedup()
+        .collect()
 }
 
 fn _get_data(fname: &str) -> Grid {
@@ -134,9 +160,9 @@ struct Broadcast {
 struct Grid {
     modules: HashMap<String, Box<dyn ModuleTrait>>,
     pulses: VecDeque<Pulse>,
-    counter: HashMap<PulseType, u32>,
+    counter: HashMap<PulseType, u64>,
     unknown: HashMap<String, Vec<Pulse>>,
-    target_counter: HashMap<String, u32>,
+    relevant: HashMap<String, HashSet<u64>>,
 }
 
 /// emit a single low pulse to the `broadcaster`
@@ -166,21 +192,20 @@ impl Grid {
         self.pulses.push_back(pulse);
     }
 
-    fn run(&mut self, num_presses: u32) {
-        for _ in 0..num_presses {
+    fn run(&mut self, num_presses: u64) {
+        for i in 0..num_presses {
             self._press_button();
-            self._process();
+            self._process(i);
         }
     }
 
-    fn _process(&mut self) {
-        // println!("{}", "-".repeat(30));
+    fn _process(&mut self, button_press_num: u64) {
         while let Some(pulse) = self.pulses.pop_front() {
-            *self.target_counter.entry(pulse.target.clone()).or_default() += 1;
-            if pulse.target == "rx" && pulse.type_ == PulseType::Low {
-                panic!("i can't believe this worked")
+            if pulse.type_ == PulseType::High {
+                if let Some(v) = self.relevant.get_mut(pulse.source.as_str()) {
+                    v.insert(button_press_num);
+                }
             }
-            // println!("{}", pulse);
             *self.counter.entry(pulse.type_).or_default() += 1;
             if let Some(target) = self.modules.get_mut(&pulse.target) {
                 self.pulses.extend(target.receive(pulse));
@@ -210,12 +235,18 @@ impl Grid {
             .collect();
 
         Self::_update_conjunctions(&mut modules);
+        let relevant = hashmap! {
+            "kh".to_string() => HashSet::<u64>::new(),
+            "hn".to_string() => HashSet::<u64>::new(),
+            "lz".to_string() => HashSet::<u64>::new(),
+            "tg".to_string() => HashSet::<u64>::new(),
+        };
         Self {
             modules,
             pulses: VecDeque::default(),
             counter: HashMap::default(),
             unknown: HashMap::default(),
-            target_counter: HashMap::default(),
+            relevant,
         }
     }
 
@@ -240,6 +271,10 @@ impl Grid {
                 }
             }
         }
+    }
+    fn dump_state(&self, button_press_num: u64) {
+        tprint!(button_press_num);
+        self.modules.values().for_each(|v| v.dump_state());
     }
 }
 
@@ -266,6 +301,7 @@ trait ModuleTrait: Debug {
     fn add_input(&mut self, _s: String) {
         panic!("should only be called by Conjunction");
     }
+    fn dump_state(&self);
 }
 
 impl Module {
@@ -320,6 +356,8 @@ impl ModuleTrait for Button {
     fn module_type(&self) -> ModuleType {
         self.module.type_
     }
+
+    fn dump_state(&self) {}
 }
 
 impl ModuleTrait for Broadcast {
@@ -337,6 +375,8 @@ impl ModuleTrait for Broadcast {
     fn module_type(&self) -> ModuleType {
         self.module.type_
     }
+
+    fn dump_state(&self) {}
 }
 
 impl ModuleTrait for FlipFlop {
@@ -364,6 +404,10 @@ impl ModuleTrait for FlipFlop {
     fn module_type(&self) -> ModuleType {
         self.module.type_
     }
+
+    fn dump_state(&self) {
+        println!("name: {}, state: {:?}", self.module.name, self.state);
+    }
 }
 
 impl ModuleTrait for Conjunction {
@@ -387,5 +431,9 @@ impl ModuleTrait for Conjunction {
     }
     fn add_input(&mut self, s: String) {
         self.inputs.insert(s, PulseType::Low);
+    }
+
+    fn dump_state(&self) {
+        println!("name: {}, inputs: {:?}", self.module.name, self.inputs);
     }
 }
