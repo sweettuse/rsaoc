@@ -29,8 +29,7 @@ fn part2() -> AocRes {
         .relevant
         .values()
         .map(|hs| {
-            let diffs = _get_diffs(hs);
-            *diffs.first().unwrap()
+            *_get_diffs(hs).first().unwrap()
         })
         .product::<u64>();
     Ok(min_run)
@@ -59,6 +58,7 @@ fn _get_diffs(nums: &HashSet<u64>) -> Vec<u64> {
     res.iter()
         .tuple_windows()
         .map(|(a, b)| **b - **a)
+        .sorted()
         .dedup()
         .collect()
 }

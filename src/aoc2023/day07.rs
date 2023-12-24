@@ -29,7 +29,7 @@ fn _get_data(fname: &str) -> Vec<Hand> {
 }
 
 fn part2() -> AocRes {
-    Err("unsolved".to_string())
+    Err("python".to_string())
 }
 
 #[derive(Debug)]

@@ -47,7 +47,7 @@ impl FromStr for Password {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut s = s.split(" ");
+        let mut s = s.split(' ');
         let range = s.next().unwrap();
         let c = s.next().unwrap().chars().nth(0).unwrap();
         let pw = s.next().unwrap();
