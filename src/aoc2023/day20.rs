@@ -264,10 +264,7 @@ impl Grid {
         for (source, targets) in source_target_map.iter() {
             for t in targets {
                 if let Some(m) = modules.get_mut(t) {
-                    if m.module_type() != ModuleType::Conjunction {
-                        continue;
-                    }
-                    m.add_input(source.clone());
+                    m.add_input(&source);
                 }
             }
         }
@@ -298,9 +295,7 @@ trait ModuleTrait: Debug {
             })
             .collect()
     }
-    fn add_input(&mut self, _s: String) {
-        panic!("should only be called by Conjunction");
-    }
+    fn add_input(&mut self, _s: &String) {}
     fn dump_state(&self);
 }
 
@@ -429,8 +424,8 @@ impl ModuleTrait for Conjunction {
     fn module_type(&self) -> ModuleType {
         self.module.type_
     }
-    fn add_input(&mut self, s: String) {
-        self.inputs.insert(s, PulseType::Low);
+    fn add_input(&mut self, s: &String) {
+        self.inputs.insert(s.clone(), PulseType::Low);
     }
 
     fn dump_state(&self) {

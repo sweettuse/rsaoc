@@ -1,4 +1,4 @@
-use std::{ops::{Add, Deref, Sub, Neg, Mul}, collections::HashMap};
+use std::{ops::{Add, Deref, Sub, Neg, Mul, Rem}, collections::HashMap};
 
 use glam::IVec2;
 use once_cell::sync::Lazy;
@@ -95,10 +95,16 @@ impl Neg for Dir {
     }
 }
 
+pub fn point_inclusive_mod(p1: &Point, p2:&Point) -> Point {
+    Point::new(p1.x.rem_euclid(p2.x + 1), p1.y.rem_euclid(p2.y + 1))
+}
+
 #[cfg(test)]
 mod test {
 
     use std::iter::zip;
+
+    use crate::point;
 
     use super::*;
 
@@ -116,5 +122,18 @@ mod test {
         assert_eq!(Dir::West.rotate(-2), Dir::East);
         assert_eq!(Dir::West.rotate(-3), Dir::North);
         assert_eq!(Dir::West.rotate(-7 * 7 * 7), Dir::North);
+    }
+
+    #[test]
+    fn test_point_mod() {
+        let mut p = Point::new(0, 0);
+        let bound = Point::new(4, 5);
+        assert_eq!(point_inclusive_mod(&p, &bound), p);
+        p = Point::new(4, 5);
+        assert_eq!(point_inclusive_mod(&p, &bound), p);
+        p = Point::new(5, 6);
+        assert_eq!(point_inclusive_mod(&p, &bound), Point::new(0, 0));
+        p = Point::new(-1, -1);
+        assert_eq!(point_inclusive_mod(&p, &bound), Point::new(4, 5));
     }
 }
