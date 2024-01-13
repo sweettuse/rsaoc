@@ -95,10 +95,10 @@ impl Machine {
     }
 
     fn called_twice(&self) -> bool {
-        if let Some(val) = self.visited.get(&self.inst_pointer) {
-            return *val > 1;
+        match self.visited.get(&self.inst_pointer) {
+            Some(val) => *val > 1,
+            None => false,
         }
-        false
     }
 }
 
