@@ -13,10 +13,12 @@ use std::time::Instant;
 #[allow(unused_macros)]
 macro_rules! run20 {
     ($day:ident) => {
+        let start = Instant::now();
         println!(
-            "aoc2020: {:?}: {:?}",
+            "aoc2020: {:?}: {:?} took {:?}µs",
             stringify!($day),
-            aoc2020::$day::main()
+            aoc2020::$day::main(),
+            start.elapsed().as_micros(),
         );
     };
 }
@@ -34,8 +36,8 @@ macro_rules! run {
 }
 
 fn main() {
-    // run_aoc2020();
-    run_aoc2023();
+    run_aoc2020();
+    // run_aoc2023();
     // run_play();
     println!("============================");
 }
@@ -71,14 +73,19 @@ fn run_aoc2023() {
 //     println!("============play============");
 // }
 
-// fn run_aoc2020() {
-//     println!("============2020============");
-//     run20!(day01);
-//     run20!(day02);
-//     run20!(day03);
-//     run20!(day04);
-//     run20!(day04_alt);
-// }
+fn run_aoc2020() {
+    println!("============2020============");
+    let start = Instant::now();
+    run20!(day01);
+    run20!(day02);
+    run20!(day03);
+    run20!(day04);
+    run20!(day05);
+    run20!(day06);
+    run20!(day07);
+    run20!(day08);
+    println!("advent of code 2020 took {:?}", start.elapsed());
+}
 // fn main_orig() {
 //     println!("Hello, world!");
 //     println!("day 01 {:?}", aoc2022::day01());
